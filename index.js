@@ -1,4 +1,4 @@
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 
 const express = require('express');
@@ -32,12 +32,24 @@ async function run() {
 
     const craftCollection = client.db('craftDB').collection('crafts')
 
+
+    app.get('/view_details/:id', async(req, res) =>{
+      const id = req.params.id;
+      const query = {_id : new ObjectId(id)}
+      const craftDetails = await craftCollection.findOne(query)
+      res.send(craftDetails);
+
+    })
+
     app.get('/craft_items', async (req, res) =>{
       const cursor = craftCollection.find();
       const result = await cursor.toArray();
 
       res.send(result);
     })
+
+
+
 
     app.post('/craft_items', async(req, res) =>{
       const newCraftItem = req.body;
