@@ -32,7 +32,7 @@ async function run() {
 
     const craftCollection = client.db('craftDB').collection('crafts')
 
-
+    //view details route
     app.get('/view_details/:id', async(req, res) =>{
       const id = req.params.id;
       const query = {_id : new ObjectId(id)}
@@ -60,6 +60,13 @@ async function run() {
     })
 
 
+    //my arts and crafts list
+
+    app.get('/art_&_craft_lists/:email', async (req, res) =>{
+      console.log(req.params.email);
+      const result = await craftCollection.find({email:req.params.email}).toArray();
+      res.send(result);
+    })
 
 
 
