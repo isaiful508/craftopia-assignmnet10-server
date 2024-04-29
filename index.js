@@ -33,15 +33,15 @@ async function run() {
     const craftCollection = client.db('craftDB').collection('crafts')
 
     //view details route
-    app.get('/view_details/:id', async(req, res) =>{
+    app.get('/view_details/:id', async (req, res) => {
       const id = req.params.id;
-      const query = {_id : new ObjectId(id)}
+      const query = { _id: new ObjectId(id) }
       const craftDetails = await craftCollection.findOne(query)
       res.send(craftDetails);
 
     })
 
-    app.get('/craft_items', async (req, res) =>{
+    app.get('/craft_items', async (req, res) => {
       const cursor = craftCollection.find();
       const result = await cursor.toArray();
 
@@ -51,7 +51,7 @@ async function run() {
 
 
 
-    app.post('/craft_items', async(req, res) =>{
+    app.post('/craft_items', async (req, res) => {
       const newCraftItem = req.body;
       console.log(newCraftItem);
 
@@ -62,14 +62,51 @@ async function run() {
 
     //my arts and crafts list
 
-    app.get('/art_&_craft_lists/:email', async (req, res) =>{
+    app.get('/art_&_craft_lists/:email', async (req, res) => {
       console.log(req.params.email);
-      const result = await craftCollection.find({email:req.params.email}).toArray();
+      const result = await craftCollection.find({ email: req.params.email }).toArray();
       res.send(result);
     })
 
-    app.delete('/delete/:id', async(req, res) =>{
-      const result = await craftCollection.deleteOne({_id : new ObjectId(req.params.id)})
+    app.get('/update/:id', async (req, res) => {
+
+      const result = await craftCollection.findOne({ _id: new ObjectId(req.params.id) })
+      res.send(result);
+      console.log(req.params.id)
+      console.log(result);
+    })
+
+
+    app.put('/updateCraft/:id', async (req, res) => {
+      const id = req.params.id
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+      const updatedCraft = req.body;
+      const craft = {
+        $set: {
+          itemName: updatedCraft.itemName,
+          SubCategory: updatedCraft.SubCategory,
+          shortDescription: updatedCraft.shortDescription,
+          price: updatedCraft.price,
+          rating: updatedCraft.rating,
+          customization: updatedCraft.customization,
+          processingTime: updatedCraft.processingTime,
+          stockStatus: updatedCraft.stockStatus
+        }
+      }
+
+      const result = await craftCollection.updateOne(filter, craft, options);
+      res.send(result);
+
+    })
+
+
+
+
+
+
+    app.delete('/delete/:id', async (req, res) => {
+      const result = await craftCollection.deleteOne({ _id: new ObjectId(req.params.id) })
       console.log(result);
       res.send(result);
     })
@@ -102,10 +139,10 @@ run().catch(console.dir);
 
 
 
-app.get('/', (req, res) =>{
-    res.send('Craftopis server is running')
+app.get('/', (req, res) => {
+  res.send('Craftopis server is running')
 })
 
 app.listen(port, () => {
-    console.log(`Craftopia server is running on port: ${port}`);
+  console.log(`Craftopia server is running on port: ${port}`);
 })
