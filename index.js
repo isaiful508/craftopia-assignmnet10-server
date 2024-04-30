@@ -32,6 +32,8 @@ async function run() {
 
     const craftCollection = client.db('craftDB').collection('crafts')
 
+    const SubCategoryCollection = client.db('CategoryDB').collection('SubCategory')
+
     //view details route
     app.get('/view_details/:id', async (req, res) => {
       const id = req.params.id;
@@ -73,7 +75,7 @@ async function run() {
       const result = await craftCollection.findOne({ _id: new ObjectId(req.params.id) })
       res.send(result);
       console.log(req.params.id)
-      console.log(result);
+      
     })
 
 
@@ -112,6 +114,21 @@ async function run() {
     })
 
 
+    //subcategory
+    
+    app.get('/subCategory', async(req, res)=>{
+      const cursor = SubCategoryCollection.find()
+      const result = await cursor.toArray()
+
+      res.send(result);
+    })
+
+    app.get('/subCategory/:joinedSubCategory', async (req, res) => {
+      console.log(req.params.joinedSubCategory);
+      const result = await craftCollection.find({ 
+        SubCategory: req.params.joinedSubCategory }).toArray();
+      res.send(result);
+    })
 
 
 
